@@ -21,6 +21,13 @@ function decrypt(encrptedMessage, key) {
     var decrypted = CryptoJS.AES.decrypt(encrptedMessage, key);
     return decrypted.toString(CryptoJS.enc.Utf8);
 }
+function base64URL (value) {
+    return value
+      .toString(CryptoJS.enc.Base64)
+      .replace(/=/g, "")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_");
+  };
 
 const Aprimo =  {
     // Function to add authentication in your web application. NOTE: will redirect you to application
@@ -54,7 +61,7 @@ const Aprimo =  {
                         accessToken: res.data.access_token,
                         refreshToken: res.data.refresh_token
                     });
-                    sessionStorage.setItem("authToken", encrypt(token));
+                    sessionStorage.setItem("authToken", encrypt(token, options.crypto));
                     resolve("Authenticated");
                 })
                 .catch((err) => {
@@ -92,7 +99,7 @@ const Aprimo =  {
                     accessToken: res.data.access_token,
                     refreshToken: res.data.refresh_token
                 });
-                sessionStorage.setItem("authToken", encrypt(token));
+                sessionStorage.setItem("authToken", encrypt(token, options.crypto));
                 resolve("Re-Authenticated");
               })
               .catch((err) => {
@@ -110,4 +117,4 @@ const Aprimo =  {
     }
 }
 
-module.exports = Aprimo;
+export default Aprimo;
