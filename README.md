@@ -27,10 +27,16 @@ const aprimo = new Aprimo();
 aprimo.authenticate()
 
 // Aprimo Reauthentication using refresh token
-Aprimo.reauthenticate()
+aprimo.reauthenticate()
 
 // Get token. 
-Aprimo.getToken()
+aprimo.getToken()
+
+// Aprimo Axios Wrapper. Authorization token will be included in the request automatically
+aprimo.get(url, data)
+aprimo.put(url, payload, data)
+aprimo.post(url, payload, data)
+aprimo.delete(url, data)
 
 
 ```

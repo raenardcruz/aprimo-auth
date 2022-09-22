@@ -33,7 +33,11 @@ class Aprimo {
     constructor (options = null) {
         let key = "aprimops";
         if (options == null) {
-            options = JSON.parse(decrypt(sessionStorage.getItem("PS_OPTIONS"), key))
+            if (sessionStorage.getItem("PS_OPTIONS") != null) {
+                options = JSON.parse(decrypt(sessionStorage.getItem("PS_OPTIONS"), key));
+            } else {
+                throw "No Session Found for Aprimo Options"
+            }
         } else if (options.useSessionStorage) {
             sessionStorage.setItem("PS_OPTIONS", encrypt(JSON.stringify(options), key));
         }
@@ -61,42 +65,38 @@ class Aprimo {
                     this.relativeAppRedirect + urlParam);
             // Step 2: Call Aprimo Authentication URL
                 axios
-                .post(
-                    `https://${this.subdomain}.aprimo.com/login/connect/token`,
+                .post(`https://${this.subdomain}.aprimo.com/login/connect/token`,
                     `grant_type=authorization_code&code=${params.get("code")}&redirect_uri=${this.redirecturi}&client_id=${this.clientid}&code_verifier=${codeVerifier}&client_secret=${this.secret}`,
                     {
                         headers: { "content-type": "application/x-www-form-urlencoded" },
-                    }
-
-
-                )
+                    })
                 .then((res) => {
                     let token = JSON.stringify({
                         accessToken: res.data.access_token,
                         refreshToken: res.data.refresh_token
                     });
-                    sessionStorage.setItem("authToken", encrypt(token, this.crypto));
+                    sessionStorage.setItem("authToken", encrypt(token, this.crypto)); // Store the encypted token in session storage
                     resolve("Authenticated");
                 })
                 .catch((err) => {
-                    reject(`Error in Authentication: ${err.response.data}`);
+                    reject(`Error in Authentication: ${err.response.data}`); // Throw Error
                 });
             } else {
-                var codeVerifier = generateCodeVerifier(128);
-                sessionStorage.setItem("codeVerifier", codeVerifier);
-                sessionStorage.setItem("params", location.search);
-                var codeChallenge = generateCodeChallenge(codeVerifier);
+                var codeVerifier = generateCodeVerifier(128); // Generate a Code verifier
+                sessionStorage.setItem("codeVerifier", codeVerifier); // Store the Code Verifier in a sessionstorage for reloading
+                sessionStorage.setItem("params", location.search); // Store the Parameter in a session storage since Redirect Uri does not contain any parameters
+                var codeChallenge = generateCodeChallenge(codeVerifier); // Generate a Code Challenger using a Code verifier
+                // Redirect into the client login page
                 window.location.href = `https://${this.subdomain}.aprimo.com/login/connect/authorize?response_type=code&state=12345&client_id=${this.clientid}&redirect_uri=${this.redirecturi}&scope=api+offline_access&code_challenge_method=S256&code_challenge=${codeChallenge}`;
             }
         })
     }
-
+    // Call this function to reauthenticate using the refresh token
     reauthenticate() {
         return new Promise((resolve, reject) => {
-            let token = JSON.parse(decrypt(sessionStorage.getItem("authToken")));
+            let token = JSON.parse(decrypt(sessionStorage.getItem("authToken"))); // get the token from the session storage.
             axios
-              .post(
-                `https://${this.subdomain}.aprimo.com/login/connect/token`,
+              .post(`https://${this.subdomain}.aprimo.com/login/connect/token`,
                 `grant_type=refresh_token&refresh_token=${token.refreshToken}`,
                 {
                   headers: {
@@ -114,22 +114,79 @@ class Aprimo {
                     accessToken: res.data.access_token,
                     refreshToken: res.data.refresh_token
                 });
-                sessionStorage.setItem("authToken", encrypt(token, this.crypto));
+                sessionStorage.setItem("authToken", encrypt(token, this.crypto)); // Set Sessiong storage for the token
                 resolve("Re-Authenticated");
               })
               .catch((err) => {
-                reject( `Error in Re-Authentication: ${err.response.data}`);
+                reject( `Error in Re-Authentication: ${err.response.data}`); // throw an error
               });
           });
     }
-
+    // Call this function to get the access token when calling an API.
     getToken() {
         if (sessionStorage.getItem("authToken") != null) {
             let token = JSON.parse(decrypt(sessionStorage.getItem("authToken"), this.crypto));
-            return token.accessToken
+            return token.accessToken // Return the access token to user
         } else {
             throw "Authorization Token Not Found. Please refresh the page to reathenticate."
         }
+    }
+    // Axios Get wrapper for Aprimo
+    get(url, data = {}) {
+        return new Promise((resolve, reject) => {
+            try {
+                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                axios
+                    .get(url, data)
+                    .then((res) => resolve(res))
+                    .catch((err) => reject(err));
+            } catch(err) {
+                reject(err)
+            }
+            
+        });
+    }
+    // Axios Put wrapper for Aprimo
+    put(url, payload, data = {}) {
+        return new Promise((resolve, reject) => {
+            try {
+                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                axios
+                    .put(url, payload, data)
+                    .then((res) => resolve(res))
+                    .catch((err) => reject(err));
+            } catch (err) {
+                reject(err)
+            }
+        });
+    }
+    // Axios Post wrapper for Aprimo
+    post(url, payload, data = {}) {
+        return new Promise((resolve, reject) => {
+            try {
+                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                axios
+                    .post(url, payload, data)
+                    .then((res) => resolve(res))
+                    .catch((err) => reject(err));
+            } catch(err) {
+                reject(err)
+            }
+        });
+    }
+    // Axios Delete wrapper for Aprimo
+    delete(url, data) {
+        return new Promise((resolve, reject) => {
+            try {
+                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                axios
+                    .delete(url, data)
+                    .then((res) => resolve(res))
+                    .catch((err) => reject(err));
+            } catch(err) {
+                reject(err)
+            }
+        });
     }
 }
 
