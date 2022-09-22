@@ -62,7 +62,7 @@ class Aprimo {
             // Step 2: Call Aprimo Authentication URL
                 axios
                 .post(
-                    `https://${options.subdomain}.aprimo.com/login/connect/token`,
+                    `https://${this.subdomain}.aprimo.com/login/connect/token`,
                     `grant_type=authorization_code&code=${params.get("code")}&redirect_uri=${this.redirecturi}&client_id=${this.clientid}&code_verifier=${codeVerifier}&client_secret=${this.secret}`,
                     {
                         headers: { "content-type": "application/x-www-form-urlencoded" },
