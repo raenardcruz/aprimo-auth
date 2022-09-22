@@ -29,9 +29,23 @@ function base64URL (value) {
       .replace(/\//g, "_");
   };
 
-const Aprimo =  {
+class Aprimo {
+    constructor (options = null) {
+        let key = "aprimops";
+        if (options == null) {
+            options = JSON.parse(decrypt(sessionStorage.getItem("PS_OPTIONS"), key))
+        } else if (options.useSessionStorage) {
+            sessionStorage.setItem("PS_OPTIONS", encrypt(JSON.stringify(options), key));
+        }
+        this.subdomain = options.subdomain;
+        this.clientid = options.clientid;
+        this.secret = options.secret;
+        this.redirecturi = options.redirecturi;
+        this.relativeAppRedirect = options.relativeAppRedirect;
+        this.crypto = options.crypto;
+    }
     // Function to add authentication in your web application. NOTE: will redirect you to application
-    authenticate(options) {
+    authenticate() {
         return new Promise((resolve, reject) => {
             // Step 1: Check for Query String Parameter Code.
             let uri = window.location.search.substring(1);
@@ -44,12 +58,12 @@ const Aprimo =  {
                 window.history.replaceState( // Replace history to remove the query string parameter added by Aprimo
                     {},
                     document.title,
-                    options.relativeAppRedirect + urlParam);
+                    this.relativeAppRedirect + urlParam);
             // Step 2: Call Aprimo Authentication URL
                 axios
                 .post(
                     `https://${options.subdomain}.aprimo.com/login/connect/token`,
-                    `grant_type=authorization_code&code=${params.get("code")}&redirect_uri=${options.redirecturi}&client_id=${options.clientid}&code_verifier=${codeVerifier}&client_secret=${options.secret}`,
+                    `grant_type=authorization_code&code=${params.get("code")}&redirect_uri=${this.redirecturi}&client_id=${this.clientid}&code_verifier=${codeVerifier}&client_secret=${this.secret}`,
                     {
                         headers: { "content-type": "application/x-www-form-urlencoded" },
                     }
@@ -61,7 +75,7 @@ const Aprimo =  {
                         accessToken: res.data.access_token,
                         refreshToken: res.data.refresh_token
                     });
-                    sessionStorage.setItem("authToken", encrypt(token, options.crypto));
+                    sessionStorage.setItem("authToken", encrypt(token, this.crypto));
                     resolve("Authenticated");
                 })
                 .catch((err) => {
@@ -72,16 +86,17 @@ const Aprimo =  {
                 sessionStorage.setItem("codeVerifier", codeVerifier);
                 sessionStorage.setItem("params", location.search);
                 var codeChallenge = generateCodeChallenge(codeVerifier);
-                window.location.href = `https://${options.subdomain}.aprimo.com/login/connect/authorize?response_type=code&state=12345&client_id=${options.clientid}&redirect_uri=${options.redirecturi}&scope=api+offline_access&code_challenge_method=S256&code_challenge=${codeChallenge}`;
+                window.location.href = `https://${this.subdomain}.aprimo.com/login/connect/authorize?response_type=code&state=12345&client_id=${this.clientid}&redirect_uri=${this.redirecturi}&scope=api+offline_access&code_challenge_method=S256&code_challenge=${codeChallenge}`;
             }
         })
-    },
-    reauthenticate(options) {
+    }
+
+    reauthenticate() {
         return new Promise((resolve, reject) => {
             let token = JSON.parse(decrypt(sessionStorage.getItem("authToken")));
             axios
               .post(
-                `https://${options.subdomain}.aprimo.com/login/connect/token`,
+                `https://${this.subdomain}.aprimo.com/login/connect/token`,
                 `grant_type=refresh_token&refresh_token=${token.refreshToken}`,
                 {
                   headers: {
@@ -89,7 +104,7 @@ const Aprimo =  {
                     Authorization:
                       "Basic " +
                       btoa(
-                        `${options.clientid}:${options.secret}`
+                        `${this.clientid}:${this.secret}`
                       ),
                   },
                 }
@@ -99,18 +114,19 @@ const Aprimo =  {
                     accessToken: res.data.access_token,
                     refreshToken: res.data.refresh_token
                 });
-                sessionStorage.setItem("authToken", encrypt(token, options.crypto));
+                sessionStorage.setItem("authToken", encrypt(token, this.crypto));
                 resolve("Re-Authenticated");
               })
               .catch((err) => {
                 reject( `Error in Re-Authentication: ${err.response.data}`);
               });
           });
-    },
+    }
+
     getToken() {
         if (sessionStorage.getItem("authToken") != null) {
-            let token = JSON.parse(decrypt(sessionStorage.getItem("authToken")));
-            return token.refreshToken
+            let token = JSON.parse(decrypt(sessionStorage.getItem("authToken"), this.crypto));
+            return token.accessToken
         } else {
             throw "Authorization Token Not Found. Please refresh the page to reathenticate."
         }
