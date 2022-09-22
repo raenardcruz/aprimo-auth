@@ -31,7 +31,7 @@ function base64URL (value) {
 
 class Aprimo {
     constructor (options = null) {
-        let key = "aprimops";
+        const key = "aprimops";
         if (options == null) {
             if (sessionStorage.getItem("PS_OPTIONS") != null) {
                 options = JSON.parse(decrypt(sessionStorage.getItem("PS_OPTIONS"), key));
@@ -135,7 +135,7 @@ class Aprimo {
     get(url, data = {}) {
         return new Promise((resolve, reject) => {
             try {
-                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                data["headers"]["Authorization"] = `Bearer ${this.getToken()}`;
                 axios
                     .get(url, data)
                     .then((res) => resolve(res))
@@ -150,7 +150,7 @@ class Aprimo {
     put(url, payload, data = {}) {
         return new Promise((resolve, reject) => {
             try {
-                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                data["headers"]["Authorization"] = `Bearer ${this.getToken()}`;
                 axios
                     .put(url, payload, data)
                     .then((res) => resolve(res))
@@ -164,7 +164,7 @@ class Aprimo {
     post(url, payload, data = {}) {
         return new Promise((resolve, reject) => {
             try {
-                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                data["headers"]["Authorization"] = `Bearer ${this.getToken()}`;
                 axios
                     .post(url, payload, data)
                     .then((res) => resolve(res))
@@ -178,7 +178,7 @@ class Aprimo {
     delete(url, data) {
         return new Promise((resolve, reject) => {
             try {
-                data["headers"]["Authorization"] = `Bearer ${decrypt(this.getToken())}`;
+                data["headers"]["Authorization"] = `Bearer ${this.getToken()}`;
                 axios
                     .delete(url, data)
                     .then((res) => resolve(res))
