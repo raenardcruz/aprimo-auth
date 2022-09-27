@@ -48,6 +48,20 @@ class Aprimo {
         this.relativeAppRedirect = options.relativeAppRedirect;
         this.crypto = options.crypto;
     }
+    connect() {
+        return new Promise((resolve, reject) => {
+            let uri = window.location.search.substring(1);
+            let params = new URLSearchParams(uri);
+            if (!params.has("code")) {
+                var codeVerifier = generateCodeVerifier(128); // Generate a Code verifier
+                sessionStorage.setItem("codeVerifier", codeVerifier); // Store the Code Verifier in a sessionstorage for reloading
+                sessionStorage.setItem("params", location.search); // Store the Parameter in a session storage since Redirect Uri does not contain any parameters
+                var codeChallenge = generateCodeChallenge(codeVerifier); // Generate a Code Challenger using a Code verifier
+                // Redirect into the client login page
+                window.location.href = `https://${this.subdomain}.aprimo.com/login/connect/authorize?response_type=code&state=12345&client_id=${this.clientid}&redirect_uri=${this.redirecturi}&scope=api+offline_access&code_challenge_method=S256&code_challenge=${codeChallenge}`;
+            }
+        })
+    }
     // Function to add authentication in your web application. NOTE: will redirect you to application
     authenticate() {
         return new Promise((resolve, reject) => {

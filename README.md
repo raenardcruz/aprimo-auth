@@ -20,10 +20,15 @@ const aprimo = new Aprimo({
     useSessionStorage: true
 });
 
-//For the succeeding initialization you can just call new Aprimo() and it will try to get the options from the session storage. assuming that you set the session storage option to true.
+// For the succeeding initialization you can just call new Aprimo() and it will try to get the options from the session storage. assuming that you set the session storage option to true.
 const aprimo = new Aprimo();
 
-// Aprimo Authentication using redirects.
+// For simple connection without getting the token. This will contain the code query string parameter which you can use to get the token.
+// You can get the codeVerifier in the session storage "codeVerifier"
+// You can get the original parameter in the session storage "params"
+aprimo.connect()
+
+// Aprimo Authentication using redirects. This will also get the access token from aprimo
 aprimo.authenticate()
 
 // Aprimo Reauthentication using refresh token
