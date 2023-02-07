@@ -50,7 +50,7 @@ class Aprimo {
     }
     connect() {
         return new Promise((resolve, reject) => {
-            let uri = window.location.search.substring(1);
+            let uri = `?${window.location.href.split('?')[1]}`;
             let params = new URLSearchParams(uri);
             if (!params.has("code")) {
                 var codeVerifier = generateCodeVerifier(128); // Generate a Code verifier
@@ -66,7 +66,7 @@ class Aprimo {
     authenticate() {
         return new Promise((resolve, reject) => {
             // Step 1: Check for Query String Parameter Code.
-            let uri = window.location.search.substring(1);
+            let uri = `?${window.location.href.split('?')[1]}`;
             let params = new URLSearchParams(uri);
             if (params.has("code")) { // Check if the url has code in its querystring parameter
                 let codeVerifier = sessionStorage.getItem("codeVerifier"); // Get the stored Code verifier in the session storage
