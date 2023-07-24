@@ -108,7 +108,7 @@ class Aprimo {
     // Call this function to reauthenticate using the refresh token
     reauthenticate() {
         return new Promise((resolve, reject) => {
-            let token = JSON.parse(decrypt(sessionStorage.getItem("authToken"))); // get the token from the session storage.
+            let token = JSON.parse(decrypt(sessionStorage.getItem("authToken"), this.crypto)); // get the token from the session storage.
             axios
               .post(`https://${this.subdomain}.aprimo.com/login/connect/token`,
                 `grant_type=refresh_token&refresh_token=${token.refreshToken}`,
