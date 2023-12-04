@@ -1,6 +1,6 @@
 {
   "name": "aprimo-auth",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Implement Aprimo Authentication on web applications",
   "main": "index.js",
   "scripts": {
