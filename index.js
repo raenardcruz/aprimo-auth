@@ -34,6 +34,7 @@ class Aprimo {
       this.codeVerifier = generateCodeVerifier(128);
       sessionStorage.setItem("codeVerifier", this.codeVerifier);
     }
+    this.authentiatedEvent = new Event("authenticated");
     let uri = `?${window.location.href.split("?")[1]}`;
     this.params = new URLSearchParams(uri);
     this.subdomain = options.subdomain;
@@ -60,6 +61,7 @@ class Aprimo {
       );
       sessionStorage.setItem("code", currentParams.get("code"));
       urlReWrite(this.relativeAppRedirect + cachedParams);
+      document.dispatchEvent(this.authentiatedEvent);
     } else {
       var splitUrl = window.location.href.split("?");
       if (splitUrl.length > 1) {
@@ -117,6 +119,9 @@ class Aprimo {
       var popupAuthObj = new PopupMode(this);
       popupAuthObj.subscribeToEvent(callback);
     }
+  }
+  onAuthenticated(callback) {
+    document.addEventListener("customEvent", (event) => callback(event));
   }
 
   // Axios Get wrapper for Aprimo

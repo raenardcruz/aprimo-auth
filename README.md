@@ -33,10 +33,15 @@ aprimo.authenticate()
 // Aprimo Reauthentication using hidden iframe or popup window
 aprimo.reauthenticate()
 
-// To get the token you should assign a function in the onGetToken event handler.
+// To get the token you should assign a function in the onGetToken event handler. This event handler will be called everytime a new token is fetched
 aprimo.onGetToken((event) => {
   // Do your logic here
   // Users can access the aprimo token using event.data
+});
+
+// You can also add an event handler when the the page is authenticated.
+aprimo.onAuthenticated((event) => {
+  // Do your logic here
 });
 
 // Aprimo Axios Wrapper. Authorization token will be included in the request automatically
