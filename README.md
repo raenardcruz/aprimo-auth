@@ -39,11 +39,6 @@ aprimo.onGetToken((event) => {
   // Users can access the aprimo token using event.data
 });
 
-// You can also add an event handler when the the page is authenticated.
-aprimo.onAuthenticated((event) => {
-  // Do your logic here
-});
-
 // Aprimo Axios Wrapper. Authorization token will be included in the request automatically
 aprimo.get(url, data)
 aprimo.put(url, payload, data)
@@ -56,7 +51,6 @@ aprimo.delete(url, data)
 ## Events
 
 - _onGetToken_ - This event gets triggered every time a new token is fetched using the iframe or popup method
-- _onAuthenticated_ - This event gets triggered after authentication process is completed successfully and user has been logged into Aprimo
 
 ## Options
 

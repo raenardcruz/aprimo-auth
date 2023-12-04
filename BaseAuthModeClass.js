@@ -49,7 +49,6 @@ export default class BaseAuthMode {
         urlReWrite(aprimoObj.relativeAppRedirect + cachedParams);
         this.intializeEventhandler();
         this.initiateGetToken(codeChallenge);
-        document.dispatchEvent(aprimoObj.authentiatedEvent);
       }
     } else {
       var splitUrl = window.location.href.split("?");
