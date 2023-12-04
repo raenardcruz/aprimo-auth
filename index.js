@@ -121,7 +121,7 @@ class Aprimo {
     }
   }
   onAuthenticated(callback) {
-    document.addEventListener("customEvent", (event) => callback(event));
+    document.addEventListener("authenticated", (event) => callback(event));
   }
 
   // Axios Get wrapper for Aprimo
