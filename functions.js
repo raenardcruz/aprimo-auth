@@ -33,5 +33,6 @@ export function base64URL(value) {
 }
 
 export function urlReWrite(path) {
-  window.history.replaceState({}, document.title, path);
+  var splitUrl = window.location.href.split("?");
+  window.history.replaceState({}, document.title, splitUrl[0] + path);
 }
