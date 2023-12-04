@@ -53,6 +53,11 @@ aprimo.delete(url, data)
 
 ```
 
+## Events
+
+- _onGetToken_ - This event gets triggered every time a new token is fetched using the iframe or popup method
+- _onAuthenticated_ - This event gets triggered after authentication process is completed successfully and user has been logged into Aprimo
+
 ## Options
 
 Aprimo Authentication parameters:
