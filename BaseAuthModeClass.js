@@ -61,10 +61,7 @@ export default class BaseAuthMode {
         sessionStorage.setItem("params", "");
       }
       var codeChallenge = generateCodeChallenge(aprimoObj.codeVerifier);
-      window.location.href = aprimoObj.getAuthorizationUrl(
-        codeChallenge,
-        (includeRefreshToken = true)
-      );
+      window.location.href = aprimoObj.getAuthorizationUrl(codeChallenge, true);
     }
   }
 
