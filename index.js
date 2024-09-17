@@ -48,7 +48,7 @@ class Aprimo {
       ? options.silentRefreshInterval
       : 10;
     this.authMode = options.authMode ? options.authMode : "iframe"; // possible values is popup and iframe
-    this.token = "";
+    this.aprimotoken = "";
   }
 
   connect() {
@@ -123,7 +123,7 @@ class Aprimo {
     return new Promise((resolve, reject) => {
       try {
         if (data["headers"] == null) data["headers"] = {};
-        data["headers"]["Authorization"] = `Bearer ${this.token}`;
+        data["headers"]["Authorization"] = `Bearer ${this.aprimotoken}`;
         axios
           .get(url, data)
           .then((res) => resolve(res))
@@ -138,7 +138,7 @@ class Aprimo {
     return new Promise((resolve, reject) => {
       try {
         if (data["headers"] == null) data["headers"] = {};
-        data["headers"]["Authorization"] = `Bearer ${this.token}`;
+        data["headers"]["Authorization"] = `Bearer ${this.aprimotoken}`;
         axios
           .put(url, payload, data)
           .then((res) => resolve(res))
@@ -153,7 +153,7 @@ class Aprimo {
     return new Promise((resolve, reject) => {
       try {
         if (data["headers"] == null) data["headers"] = {};
-        data["headers"]["Authorization"] = `Bearer ${this.token}`;
+        data["headers"]["Authorization"] = `Bearer ${this.aprimotoken}`;
         axios
           .post(url, payload, data)
           .then((res) => resolve(res))
@@ -168,7 +168,7 @@ class Aprimo {
     return new Promise((resolve, reject) => {
       try {
         if (data["headers"] == null) data["headers"] = {};
-        data["headers"]["Authorization"] = `Bearer ${this.token}`;
+        data["headers"]["Authorization"] = `Bearer ${this.aprimotoken}`;
         axios
           .delete(url, data)
           .then((res) => resolve(res))

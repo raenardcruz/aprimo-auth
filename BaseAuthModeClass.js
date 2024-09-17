@@ -83,7 +83,7 @@ export default class BaseAuthMode {
   subscribeToEvent(callback) {
     window.addEventListener("message", (event) => {
       if (event.origin === window.location.origin) {
-        this.aprimo.token = event.data;
+        this.aprimo.aprimotoken = event.data;
         this.eventAction(event);
         callback(event);
       }
